@@ -97,7 +97,7 @@ static void canvas_update_proc(Layer *layer, GContext *ctx) {
     }
 
     // 10-minute tick dashes below the bar (including 0 and 60)
-    graphics_context_set_fill_color(ctx, empty);
+    graphics_context_set_fill_color(ctx, filled);
     for (int i = 0; i <= 60; i += 10) {
         int pos = (i == 60) ? 59 : i;
         graphics_fill_rect(ctx, GRect(bm + pos * seg_sp, bar_y + bar_h + 1, seg_w, 2), 0, GCornerNone);
