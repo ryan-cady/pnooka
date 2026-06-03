@@ -21,8 +21,7 @@
       "FILLED_COLOR",
       "EMPTY_COLOR",
       "SHOW_DATE",
-      "DATE_FORMAT",
-      "SHOW_YEAR"
+      "DATE_STYLE"
     ],
     "resources": {
       "media": []

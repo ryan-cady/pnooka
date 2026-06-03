@@ -39,16 +39,16 @@ module.exports = [
     "defaultValue": true
   },
   {
-    "type": "toggle",
-    "messageKey": "DATE_FORMAT",
-    "label": "Use DD/MM format",
-    "defaultValue": false
-  },
-  {
-    "type": "toggle",
-    "messageKey": "SHOW_YEAR",
-    "label": "Show Year in Date",
-    "defaultValue": true
+    "type": "select",
+    "messageKey": "DATE_STYLE",
+    "label": "Date Format",
+    "defaultValue": "0",
+    "options": [
+      { "label": "MM/DD/YY", "value": "0" },
+      { "label": "MM/DD",    "value": "1" },
+      { "label": "DD/MM/YY", "value": "2" },
+      { "label": "DD/MM",    "value": "3" }
+    ]
   },
 
   {

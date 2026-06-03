@@ -4,8 +4,7 @@ extern uint32_t MESSAGE_KEY_BG_COLOR;
 extern uint32_t MESSAGE_KEY_FILLED_COLOR;
 extern uint32_t MESSAGE_KEY_EMPTY_COLOR;
 extern uint32_t MESSAGE_KEY_SHOW_DATE;
-extern uint32_t MESSAGE_KEY_DATE_FORMAT;
-extern uint32_t MESSAGE_KEY_SHOW_YEAR;
+extern uint32_t MESSAGE_KEY_DATE_STYLE;
 
 #define GRID_COLS 4
 #define GRID_ROWS 3
@@ -14,8 +13,7 @@ extern uint32_t MESSAGE_KEY_SHOW_YEAR;
 #define PERSIST_KEY_FILLED      2
 #define PERSIST_KEY_EMPTY       3
 #define PERSIST_KEY_SHOW_DATE   4
-#define PERSIST_KEY_DATE_FORMAT 5
-#define PERSIST_KEY_SHOW_YEAR   6
+#define PERSIST_KEY_DATE_STYLE  5
 
 #ifdef PBL_BW
 #define DEFAULT_BG_ARGB     0xFF  // white
@@ -33,7 +31,7 @@ static Layer  *s_canvas_layer;
 static int     s_hours, s_minutes;
 static uint8_t s_is_pm;
 static uint8_t s_bg_argb, s_filled_argb, s_empty_argb;
-static uint8_t s_show_date, s_date_format, s_show_year;
+static uint8_t s_show_date, s_date_style;
 
 static uint8_t rgb24_to_argb8(int32_t val) {
     uint8_t r = (val >> 16) & 0xFF;
@@ -122,13 +120,8 @@ static void canvas_update_proc(Layer *layer, GContext *ctx) {
     if (s_show_date) {
         time_t now = time(NULL);
         struct tm *t = localtime(&now);
-        const char *fmt;
-        if (s_date_format == 0) {
-            fmt = s_show_year ? "%m/%d/%y" : "%m/%d";
-        } else {
-            fmt = s_show_year ? "%d/%m/%y" : "%d/%m";
-        }
-        strftime(buf, sizeof(buf), fmt, t);
+        static const char *fmts[] = { "%m/%d/%y", "%m/%d", "%d/%m/%y", "%d/%m" };
+        strftime(buf, sizeof(buf), fmts[s_date_style < 4 ? s_date_style : 0], t);
         graphics_draw_text(ctx, buf, info_font,
                            GRect(bm, text_y, bar_w, font_h),
                            GTextOverflowModeWordWrap, GTextAlignmentLeft, NULL);
@@ -184,11 +177,12 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
     t = dict_find(iter, MESSAGE_KEY_SHOW_DATE);
     if (t) { s_show_date = (uint8_t)t->value->int32; persist_write_int(PERSIST_KEY_SHOW_DATE, s_show_date); }
 
-    t = dict_find(iter, MESSAGE_KEY_DATE_FORMAT);
-    if (t) { s_date_format = (uint8_t)t->value->int32; persist_write_int(PERSIST_KEY_DATE_FORMAT, s_date_format); }
-
-    t = dict_find(iter, MESSAGE_KEY_SHOW_YEAR);
-    if (t) { s_show_year = (uint8_t)t->value->int32; persist_write_int(PERSIST_KEY_SHOW_YEAR, s_show_year); }
+    t = dict_find(iter, MESSAGE_KEY_DATE_STYLE);
+    if (t) {
+        uint8_t v = (t->type == TUPLE_CSTRING) ? (uint8_t)atoi(t->value->cstring) : (uint8_t)t->value->int32;
+        s_date_style = (v < 4) ? v : 0;
+        persist_write_int(PERSIST_KEY_DATE_STYLE, s_date_style);
+    }
 
     layer_mark_dirty(s_canvas_layer);
 }
@@ -225,8 +219,7 @@ static void init(void) {
     s_empty_argb  = persist_exists(PERSIST_KEY_EMPTY)  ? (uint8_t)persist_read_int(PERSIST_KEY_EMPTY)  : DEFAULT_EMPTY_ARGB;
 
     s_show_date   = persist_exists(PERSIST_KEY_SHOW_DATE)   ? (uint8_t)persist_read_int(PERSIST_KEY_SHOW_DATE)   : 1;
-    s_date_format = persist_exists(PERSIST_KEY_DATE_FORMAT) ? (uint8_t)persist_read_int(PERSIST_KEY_DATE_FORMAT) : 0;
-    s_show_year   = persist_exists(PERSIST_KEY_SHOW_YEAR)   ? (uint8_t)persist_read_int(PERSIST_KEY_SHOW_YEAR)   : 1;
+    s_date_style  = persist_exists(PERSIST_KEY_DATE_STYLE)  ? (uint8_t)persist_read_int(PERSIST_KEY_DATE_STYLE)  : 0;
 
     s_window = window_create();
     window_set_window_handlers(s_window, (WindowHandlers){
