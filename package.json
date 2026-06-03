@@ -1,7 +1,7 @@
 {
   "name": "pnooka",
   "author": "Ryan Cady",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "keywords": ["pebble-app"],
   "private": true,
   "dependencies": {
