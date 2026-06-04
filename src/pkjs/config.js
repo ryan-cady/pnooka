@@ -7,18 +7,21 @@ module.exports = [
   // ── Colors ──────────────────────────────────────────────────────────────────
   {
     "type": "color",
+    "allowGray": true,
     "messageKey": "BG_COLOR",
     "label": "Background",
     "defaultValue": "FFFFFF"
   },
   {
     "type": "color",
+    "allowGray": true,
     "messageKey": "FILLED_COLOR",
     "label": "Active (dots & bar)",
     "defaultValue": "555555"
   },
   {
     "type": "color",
+    "allowGray": true,
     "messageKey": "EMPTY_COLOR",
     "label": "Inactive (unfilled)",
     "defaultValue": "AAAAAA"
